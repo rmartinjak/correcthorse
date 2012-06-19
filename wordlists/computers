@@ -3,6 +3,7 @@ adapter
 address
 backbone
 bridge
+cable
 cdrom
 click
 client
@@ -52,7 +53,7 @@ output
 packet
 passive
 paste
-patchcable
+patch
 path
 peripheral
 ping
@@ -76,5 +77,4 @@ text
 traffic
 transaction
 transmission
-twistedpair
 unshielded
