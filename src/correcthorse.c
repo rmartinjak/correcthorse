@@ -65,7 +65,7 @@ static void print_usage(char *argv0)
             "-h, --help             print this text and exit\n"
             "-v, --version          print version and exit\n"
             "-i, --include <word>   include <word> in passphrase\n"
-            "-l, --wordlist <list>  use wordlist <list>.\n"
+            "-l, --list <list>      use wordlist <list>.\n"
             "                       must be either absolute path or path relative to " WORDLIST_DIR ".\n"
             "                       max. " STR(WLISTS_MAX) " wordlists can be specified;\n"
             "                       if omitted, the default wordlist " WORDLIST_DIR "/" WORDLIST_DEFAULT " will be used.\n"
