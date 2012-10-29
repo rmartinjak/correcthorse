@@ -213,7 +213,6 @@ int main(int argc, char **argv)
                 break;
 
             case '?':
-                fprintf(stderr, "uknown option \"-%c\"\n", optopt);
                 exit(EXIT_FAILURE);
         }
     }
