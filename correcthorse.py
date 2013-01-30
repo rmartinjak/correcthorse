@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+""" correcthorse - a passphrase generator inspired by http://xkcd.com/936/
+
+Copyright (c) 2012-2013 Robin Martinjak <rob@rmartinjak.de>
+
+This work is free. You can redistribute it and/or modify it under the
+terms of the Do What The Fuck You Want To Public License, Version 2,
+as published by Sam Hocevar. See the COPYING file for more details.
+"""
+
 import os.path
 import random
 
