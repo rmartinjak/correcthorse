@@ -28,9 +28,10 @@ var (
 	optCamel = false
 )
 
+// slice of strings that can be appended so that "-opt foo -opt bar" is equiv. to "-opt foo,bar"
 type stringSliceOpt struct {
-	vals  []string
-	isSet bool
+	vals  []string // options
+	isSet bool     // initially false -> remove default options the first time it is set
 }
 
 // String and Set implement flag.Value
@@ -40,6 +41,7 @@ func (s *stringSliceOpt) String() string {
 	}
 	return fmt.Sprint(strings.Join(s.vals, ","))
 }
+
 func (s *stringSliceOpt) Set(value string) error {
 	// "clear" the slice if it hasn't been set before
 	if !s.isSet {
@@ -60,8 +62,10 @@ func readLines(filename string) ([]string, error) {
 
 	file, err := os.Open(filename)
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
+	defer file.Close()
+
 	reader := bufio.NewReader(file)
 	for err == nil {
 		line, e := reader.ReadString('\n')
@@ -70,27 +74,41 @@ func readLines(filename string) ([]string, error) {
 		}
 		err = e
 	}
-	file.Close()
+
 	if err != io.EOF {
-		return []string{}, err
+		return nil, err
 	}
 	return lines, nil
 }
 
+// load wordlists from multiple files
 func loadWords(paths []string) ([][]string, error) {
 	wordLists := make([][]string, len(paths))
+	ch := make(chan []string)
+	abort := make(chan error)
 
 	// read words from all provided pathnames
 	// relative pathnames are searched below wordlistDir
-	for i, p := range paths {
-		if !filepath.IsAbs(p) {
-			p = filepath.Join(wordlistDir, p)
+	for _, p := range paths {
+		go func() {
+			if !filepath.IsAbs(p) {
+				p = filepath.Join(wordlistDir, p)
+			}
+			lines, err := readLines(p)
+			if err != nil {
+				abort <- err
+			}
+			ch <- lines
+		}()
+	}
+
+	for i := 0; i < len(paths); i++ {
+		select {
+		case lines := <-ch:
+			wordLists[i] = lines
+		case err := <-abort:
+			return nil, err
 		}
-		lines, err := readLines(p)
-		if err != nil {
-			return [][]string{}, err
-		}
-		wordLists[i] = lines
 	}
 	return wordLists, nil
 }
@@ -106,6 +124,7 @@ func shuffleStrings(words []string) []string {
 	return w
 }
 
+// generate a passphrase
 func makePassphrase(wordLists [][]string) string {
 	nChars := 0
 	words := make([]string, 0)
@@ -134,8 +153,8 @@ func makePassphrase(wordLists [][]string) string {
 	return strings.Join(shuffleStrings(words), optSep)
 }
 
+// initialize command-line options
 func init() {
-	// initialize argument parsing
 	flag.Var(&optIncs, "inc", "word(s) to include in passphrase")
 	flag.Var(&optLists, "list", "wordlist(s) to use (lower case L)")
 	flag.IntVar(&optChars, "chars", optChars, "minimum number of characters")
