@@ -153,6 +153,7 @@ int main(int argc, char **argv)
         { "camelcase",  no_argument, NULL, 'u' },
         { "help",       no_argument, NULL, 'h' },
         { "version",    no_argument, NULL, 'v' },
+        { 0,            0,           0,     0  }
     };
     while ((c = getopt_long(argc, argv, "hvi:l:c:w:s:u", long_opts, NULL)) != -1)
     #else
