@@ -18,6 +18,7 @@ WORDLISTS_DEFAULT = ['english']
 
 WORDLIST_DIR = '/usr/share/correcthorse'
 
+_sysrand = random.SystemRandom()
 
 def read_wordlist(name):
     if not os.path.exists(name):
@@ -65,14 +66,14 @@ def make_passphrases(
         c = chars
 
         while len(w) < words_min or c < chars_min:
-            word = random.choice(wlistwords)
+            word = _sysrand.choice(wlistwords)
             w.append(word)
             c += len(word)
 
         if camelcase:
             w = [word.capitalize() for word in w]
 
-        random.shuffle(w)
+        _sysrand.shuffle(w)
 
         yield sep.join(w)
 
